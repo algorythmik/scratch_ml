@@ -10,7 +10,7 @@ typedef struct {
 LinearRegression *LinearRegression_new();
 void LinearRegression_fit(void *self, double *X, double *y, int n_samples,
                           int n_feaures);
-void LinearRegression_predict(void *self, double *X, int n_samples,
+void LinearRegression_predict(void *self, double *X, double *y, int n_samples,
                               int n_feaures);
-void LinerRegression_free(void *self);
+void LinearRegression_free(void *self);
 #endif // !LINEAR_REGRESSION_H
