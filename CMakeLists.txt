@@ -3,11 +3,15 @@ project(ScratchML C)
 
 set(CMAKE_C_STANDARD 11)
 
+# Enable testing
+enable_testing()
+
 # Add include directory
 include_directories(include)
 
 # Add subdirectories
 add_subdirectory(src)
+add_subdirectory(tests)
 
 # Create the main executable from the main.c file
 add_executable(main main.c)
