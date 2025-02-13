@@ -14,7 +14,7 @@ LinearRegression *LinearRegression_new() {
 }
 
 void LinearRegression_fit(void *self, double *X, double *y, int n_samples,
-                       int n_features) {
+                          int n_features) {
   LinearRegression *model = (LinearRegression *)self;
   model->n_features = n_features;
   model->weights = malloc(n_features * sizeof(double));

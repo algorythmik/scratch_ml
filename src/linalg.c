@@ -2,6 +2,7 @@
 #include <Accelerate/Accelerate.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Matrix create_matrix(int rows, int cols) {
   Matrix mat = {NULL, rows, cols};
@@ -32,8 +33,8 @@ bool matmul(const Matrix *restrict A, const Matrix *restrict B, Matrix *restrict
     size_t k = A->cols;
     
     if (k != B->rows) {
-        fprintf(stderr, "Matrix dimension mismatch: %zu x %zu * %zu x %zu\n", 
-                m, k, B->rows, n);
+        fprintf(stderr, "Matrix dimension mismatch: %d x %d * %d x %d\n", 
+                (int)m, (int)k, (int)B->rows, (int)n);
         return false;
     }
     
@@ -99,4 +100,53 @@ bool matrices_equal(const Matrix *A, const Matrix *B, double epsilon) {
     }
     
     return true;
+}
+
+bool matrix_inverse_raw(int n, double *A, int lda, int *ipiv) {
+    int info;
+    
+    // LU decomposition
+    dgetrf_(&n, &n, A, &lda, ipiv, &info);
+    if (info != 0) {
+        return false;
+    }
+    
+    // Matrix inversion
+    int lwork = n * n;
+    double *work = (double *)malloc(lwork * sizeof(double));
+    dgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    free(work);
+    
+    return (info == 0);
+}
+
+bool matrix_inverse(const Matrix *A, Matrix *inv_A) {
+    if (!A || !inv_A || !A->data || A->rows != A->cols) {
+        return false;
+    }
+    
+    int n = A->rows;
+    
+    // Create or verify output matrix
+    if (!inv_A->data || inv_A->rows != n || inv_A->cols != n) {
+        *inv_A = create_matrix(n, n);
+        if (!inv_A->data) {
+            return false;
+        }
+    }
+    
+    // Copy input matrix to output (LAPACK routines work in-place)
+    memcpy(inv_A->data, A->data, n * n * sizeof(double));
+    
+    // Allocate pivot indices array
+    int *ipiv = (int *)malloc(n * sizeof(int));
+    if (!ipiv) {
+        return false;
+    }
+    
+    // Perform inversion
+    bool success = matrix_inverse_raw(n, inv_A->data, n, ipiv);
+    
+    free(ipiv);
+    return success;
 }
