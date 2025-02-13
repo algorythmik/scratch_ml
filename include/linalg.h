@@ -1,0 +1,29 @@
+#ifndef LINALG_H
+#define LINALG_H
+
+#include <stdbool.h>
+
+typedef struct {
+  double *data;
+  int rows;
+  int cols;
+} Matrix;
+
+Matrix create_matrix(int rows, int cols);
+bool free_matrix(Matrix *mat);
+
+bool matmul(const Matrix *A, const Matrix *B, Matrix *C);
+
+void print_matrix(const Matrix *mat);
+
+// Add new function to initialize matrix from array
+Matrix matrix_from_array(int rows, int cols, const double values[]);
+
+// Add new function to compare matrices
+bool matrices_equal(const Matrix *A, const Matrix *B, double epsilon);
+
+// Add matrix inversion functions
+bool matrix_inverse(const Matrix *A, Matrix *inv_A);
+bool matrix_inverse_raw(int n, double *A, int lda, int *ipiv);
+
+#endif // !LINALG_H
