@@ -1,6 +1,5 @@
 # Create a static library for ScratchML from the source files
 add_library(ScratchML STATIC
-    base.c
     linalg.c
     # dataframe.c
     linear_regression.c

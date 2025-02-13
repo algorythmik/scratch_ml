@@ -58,10 +58,10 @@ static void test_matrix_from_array() {
     
     assert(mat.rows == 2);
     assert(mat.cols == 2);
-    assert(doubles_equal(mat.data[0], 1.0));
-    assert(doubles_equal(mat.data[1], 2.0));
-    assert(doubles_equal(mat.data[2], 3.0));
-    assert(doubles_equal(mat.data[3], 4.0));
+    double expected[] = {1.0, 2.0, 3.0, 4.0};
+    Matrix expected_mat = matrix_from_array(2, 2, expected);
+    assert(matrices_equal(&mat, &expected_mat, EPSILON) && "Matrix values do not match expected");
+    free_matrix(&expected_mat);
     
     free_matrix(&mat);
     printf("Matrix from array test passed!\n");
