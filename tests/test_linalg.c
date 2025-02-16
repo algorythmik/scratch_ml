@@ -134,6 +134,41 @@ static void test_matrix_inverse() {
     printf("Matrix inversion test passed!\n");
 }
 
+static void test_matrix_concat() {
+    // Test vertical concatenation (axis = 0)
+    double values1[] = {1.0, 2.0, 3.0, 4.0};  // 2x2 matrix
+    double values2[] = {5.0, 6.0, 7.0, 8.0};  // 2x2 matrix
+    Matrix A = matrix_from_array(2, 2, values1);
+    Matrix B = matrix_from_array(2, 2, values2);
+    
+    // Vertical concatenation
+    Matrix V = matrix_concat(&A, &B, 0);
+    assert(V.rows == 4 && V.cols == 2 && "Incorrect dimensions for vertical concatenation");
+    
+    double expected_v[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
+    Matrix expected_V = matrix_from_array(4, 2, expected_v);
+    assert(matrices_equal(&V, &expected_V, EPSILON) && "Incorrect vertical concatenation");
+    
+    // Horizontal concatenation
+    Matrix H = matrix_concat(&A, &B, 1);
+    assert(H.rows == 2 && H.cols == 4 && "Incorrect dimensions for horizontal concatenation");
+    
+    double expected_h[] = {1.0, 2.0, 5.0, 6.0, 3.0, 4.0, 7.0, 8.0};
+    Matrix expected_H = matrix_from_array(2, 4, expected_h);
+    assert(matrices_equal(&H, &expected_H, EPSILON) && "Incorrect horizontal concatenation");
+    
+    
+    // Clean up
+    free_matrix(&A);
+    free_matrix(&B);
+    free_matrix(&V);
+    free_matrix(&H);
+    free_matrix(&expected_V);
+    free_matrix(&expected_H);
+    
+    printf("Matrix concatenation test passed!\n");
+}
+
 int main() {
     printf("Running matrix multiplication tests...\n");
     
@@ -142,6 +177,7 @@ int main() {
     test_matrix_from_array();
     test_matrices_equal();
     test_matrix_inverse();
+    test_matrix_concat();
     
     printf("All tests passed!\n");
     return 0;

@@ -53,7 +53,6 @@ bool matmul(const Matrix *restrict A, const Matrix *restrict B, Matrix *restrict
     
     return true;
 }
-
 void print_matrix(const Matrix *mat) {
     if (!mat || !mat->data) {
         fprintf(stderr, "Invalid matrix\n");
@@ -150,3 +149,47 @@ bool matrix_inverse(const Matrix *A, Matrix *inv_A) {
     free(ipiv);
     return success;
 }
+
+Matrix matrix_concat(const Matrix *A, const Matrix *B, int axis) {
+    // Verify inputs - program will terminate if these fail
+    assert(A != NULL && "Matrix A is null");
+    assert(B != NULL && "Matrix B is null");
+    assert(A->data != NULL && "Matrix A data is null");
+    assert(B->data != NULL && "Matrix B data is null");
+    assert((axis == 0 || axis == 1) && "Invalid axis");
+    
+    Matrix result = {NULL, 0, 0};
+    
+    if (axis == 0) {  // Vertical stacking (concatenate rows)
+        assert(A->cols == B->cols && "Column dimensions must match for vertical stacking");
+        
+        result = create_matrix(A->rows + B->rows, A->cols);
+        assert(result.data != NULL && "Memory allocation failed");
+        
+        memcpy(result.data, A->data, A->rows * A->cols * sizeof(double));
+        memcpy(result.data + (A->rows * A->cols), B->data, B->rows * B->cols * sizeof(double));
+        
+    } else if (axis == 1) {  // Horizontal stacking (concatenate columns)
+      printf("Horizental Rows of A: %d, Rows of B: %d\n", A->rows, B->rows);
+        assert(A->rows == B->rows &&
+            "Cannot horizontally concatenate matrices with different numbers of rows"
+        ); 
+        result = create_matrix(A->rows, A->cols + B->cols);
+        
+        assert(result.data != NULL && "Memory allocation failed");
+        // Copy row by row
+        for (int i = 0; i < A->rows; i++) {
+            // Copy row from A
+            memcpy(result.data + i * (A->cols + B->cols), 
+                   A->data + i * A->cols, 
+                   A->cols * sizeof(double));
+            
+            // Copy row from B
+            memcpy(result.data + i * (A->cols + B->cols) + A->cols, 
+                   B->data + i * B->cols, 
+                   B->cols * sizeof(double));
+        }
+    } 
+    return result;
+}
+
